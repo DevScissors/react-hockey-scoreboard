@@ -1,0 +1,70 @@
+@font-face {
+  font-family: DS-Digital;
+  src: url(../shared/ds_digital/DS-DIGI.TTF);
+}
+.digital-text {
+  font-family: DS-Digital;
+  font-size: 40px;
+  color: #d5b60a;
+}
+
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.timer-control-group {
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  min-width: 220px;
+}
+
+.timer-control-group__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.timer-control-group__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timer-control-group__actions input {
+  width: 4.5rem;
+}
+
+.scoreboard__clock {
+  text-align: center;
+}
+
+.timer-message {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.timer-message--penalty {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.penalty-timers {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.penalty-timers__slot {
+  min-width: 5rem;
+}
+
+.penalty-timers__label {
+  align-self: center;
+}

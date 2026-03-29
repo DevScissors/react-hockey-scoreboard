@@ -1,0 +1,27 @@
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 24px;
+  color: white;
+}
+
+.scoreboard-wrapper {
+  background-color: lightgrey;
+  height: 60vh;
+  width: 40%;
+  justify-self: center;
+  border: 1px solid red;
+}
+
+.digits {
+  height: 30px;
+}
+
+.colon {
+  display: inline;
+  font-size: xxx-large;
+  padding: 0 5px;
+}
