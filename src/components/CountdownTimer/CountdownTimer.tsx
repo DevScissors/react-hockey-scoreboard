@@ -1,8 +1,19 @@
 import './CountdownTimer.css';
 
-function formatTime(totalSeconds: number) {
+function formatTime(
+  totalSeconds: number,
+  variant: 'game' | 'penalty' = 'game',
+) {
   const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
+  const seconds = Math.floor(totalSeconds % 60);
+  const tenths = Math.floor((totalSeconds - Math.floor(totalSeconds)) * 10);
+
+  // Show tenths only for game clock when less than 1 minute remaining
+  if (variant === 'game' && totalSeconds < 60) {
+    return `${String(seconds).padStart(2, '0')}.${tenths}`;
+  }
+
+  // Standard format without leading zero on minutes
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
@@ -13,6 +24,8 @@ export type CountdownTimerProps = {
   /** 'game' = main clock size; 'penalty' = slightly smaller for side timers. */
   variant?: 'game' | 'penalty';
   className?: string;
+  /** Unique identifier for the input element. */
+  inputId?: string;
 };
 
 export default function CountdownTimer({
@@ -20,17 +33,30 @@ export default function CountdownTimer({
   label,
   variant = 'game',
   className = '',
+  inputId,
 }: CountdownTimerProps) {
-  const rootClass = ['countdown-timer', variant === 'penalty' && 'countdown-timer--penalty', className]
+  const rootClass = [
+    'countdown-timer',
+    variant === 'penalty' && 'countdown-timer--penalty',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
   return (
     <div className={rootClass}>
       {label ? <div className='countdown-timer__label'>{label}</div> : null}
-      <div className='time-display' aria-label={label ? `${label}: ${formatTime(Math.max(0, seconds))}` : undefined}>
-        {formatTime(Math.max(0, seconds))}
-      </div>
+      <input
+        id={inputId}
+        type='text'
+        className='time-display'
+        aria-label={
+          label
+            ? `${label}: ${formatTime(Math.max(0, seconds), variant)}`
+            : undefined
+        }
+        value={formatTime(Math.max(0, seconds), variant)}
+      />
     </div>
   );
 }

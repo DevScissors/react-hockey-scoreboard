@@ -3,25 +3,33 @@
   src: url(../shared/ds_digital/DS-DIGI.TTF);
 }
 
-.countdown-timer {
+/* .countdown-timer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  justify-content: center;
   gap: 0.25rem;
-}
+} */
 
-.countdown-timer__label {
+/* .countdown-timer__label {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #a0a0a0;
+} */
+
+#game-clock-input {
+  font-family: DS-Digital;
+  font-size: 75px;
+  color: red;
+  width: 16%;
+  justify-items: left;
 }
 
 .time-display {
   font-family: DS-Digital;
-  font-size: 40px;
   color: red;
+  width: 16%;
 }
 
 .countdown-timer--penalty .time-display {

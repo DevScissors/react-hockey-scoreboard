@@ -8,16 +8,21 @@ export type TimerState = {
 };
 
 export type TimerAction =
-  | { type: 'TICK' }
+  | { type: 'TICK'; delta?: number }
   | { type: 'TOGGLE_RUNNING' }
   | { type: 'RESET' }
   | { type: 'SET_DURATION_FROM_MINUTES'; minutes: number };
 
-export function timerReducer(state: TimerState, action: TimerAction): TimerState {
+export function timerReducer(
+  state: TimerState,
+  action: TimerAction,
+): TimerState {
   switch (action.type) {
     case 'TICK': {
       if (!state.isRunning) return state;
-      if (state.secondsRemaining <= 1) {
+      const delta = action.delta ?? 1;
+      const newRemaining = state.secondsRemaining - delta;
+      if (newRemaining <= 0) {
         return {
           ...state,
           secondsRemaining: 0,
@@ -27,7 +32,7 @@ export function timerReducer(state: TimerState, action: TimerAction): TimerState
       }
       return {
         ...state,
-        secondsRemaining: state.secondsRemaining - 1,
+        secondsRemaining: newRemaining,
       };
     }
     case 'TOGGLE_RUNNING': {
@@ -74,15 +79,15 @@ export function useTimer(initialDurationSeconds: number) {
   const [state, dispatch] = useReducer(
     timerReducer,
     initialDurationSeconds,
-    createInitialState
+    createInitialState,
   );
 
   useEffect(() => {
     if (!state.isRunning) return;
 
     const id = window.setInterval(() => {
-      dispatch({ type: 'TICK' });
-    }, 1000);
+      dispatch({ type: 'TICK', delta: 0.1 });
+    }, 100);
 
     return () => clearInterval(id);
   }, [state.isRunning]);
@@ -97,7 +102,9 @@ export type TimerBundle = readonly [TimerState, Dispatch<TimerAction>];
  * Two independent penalty clocks for one team. Hooks must be fixed at compile time
  * (not called in a loop), so this composes two `useTimer` calls.
  */
-export function useTimerPair(initialDurationSeconds: number): readonly [TimerBundle, TimerBundle] {
+export function useTimerPair(
+  initialDurationSeconds: number,
+): readonly [TimerBundle, TimerBundle] {
   const first = useTimer(initialDurationSeconds);
   const second = useTimer(initialDurationSeconds);
   return [first, second] as const;
