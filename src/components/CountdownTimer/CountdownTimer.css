@@ -22,20 +22,22 @@
   font-family: DS-Digital;
   font-size: 75px;
   color: red;
-  width: 100%;
-  justify-items: left;
 }
 
 .countdown-timer {
   cursor: pointer;
   display: inline-block;
   width: 19%;
+  min-width: 220px;
 }
 
-.time-display {
+.countdown-timer .time-display {
   font-family: DS-Digital;
   color: red;
-  width: 16%;
+  width: 100%;
+  text-align: center;
+  border: none;
+  background: transparent;
 }
 
 .countdown-timer--penalty .time-display {

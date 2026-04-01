@@ -40,6 +40,13 @@
 
 .scoreboard__clock {
   text-align: center;
+  min-width: 220px;
+}
+
+.scoreboard__clock .time-display {
+  width: 100%;
+  text-align: center;
+  font-size: 75px;
 }
 
 .timer-message {
@@ -83,13 +90,14 @@
 }
 
 /* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
+input:not(.show-spinner)::-webkit-outer-spin-button,
+input:not(.show-spinner)::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Firefox */
-input[type='number'] {
+input[type='number']:not(.show-spinner) {
   -moz-appearance: textfield;
 }
+

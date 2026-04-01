@@ -21,6 +21,7 @@ function TimerControlGroup({
   minutes,
   setMinutes,
   disableToggle = false,
+  isPenalty = false,
 }: {
   title: string;
   timer: TimerState;
@@ -28,6 +29,7 @@ function TimerControlGroup({
   minutes: number;
   setMinutes: (value: number) => void;
   disableToggle?: boolean;
+  isPenalty?: boolean;
 }) {
   return (
     <section className='timer-control-group'>
@@ -53,8 +55,10 @@ function TimerControlGroup({
         </button>
         <input
           type='number'
-          min={0}
-          step={1}
+          min={isPenalty ? 0 : 0}
+          max={isPenalty ? 10 : undefined}
+          step={isPenalty ? 2 : 1}
+          className={isPenalty ? 'time-display show-spinner' : 'time-display'}
           value={minutes}
           onChange={(e) => setMinutes(Number(e.target.value))}
           aria-label={`${title} length in minutes`}
@@ -85,7 +89,8 @@ export const Scoreboard = (): JSX.Element => {
   const [isEditing, setIsEditing] = useState(false);
   const [gameInputMinutes, setGameInputMinutes] = useState(1);
   const [isClockEditorOpen, setIsClockEditorOpen] = useState(false);
-  const [gameClockMinutesInput, setGameClockMinutesInput] = useState(1);
+  const [gameClockMinutesInput, setGameClockMinutesInput] = useState('1');
+  const clockInputRef = React.useRef<HTMLInputElement>(null);
   const [homePenaltyMinutes, setHomePenaltyMinutesAt] = usePenaltyInputMinutes(
     PENALTY_SLOTS,
     2,
@@ -100,12 +105,27 @@ export const Scoreboard = (): JSX.Element => {
   const currentGameMinutes = Math.max(1, Math.ceil(gameTimer.secondsRemaining / 60));
 
   const openClockEditor = () => {
-    setGameClockMinutesInput(currentGameMinutes);
+    setGameClockMinutesInput(String(currentGameMinutes));
     setIsClockEditorOpen(true);
   };
 
-  const commitClockMinutes = (minutes: number) => {
-    const validated = Math.max(1, Math.min(99, minutes));
+  React.useEffect(() => {
+    if (isClockEditorOpen) {
+      clockInputRef.current?.focus();
+      clockInputRef.current?.select();
+    }
+  }, [isClockEditorOpen]);
+
+  const commitClockMinutes = (input: string) => {
+    const minutes = Number(input);
+    if (Number.isNaN(minutes) || minutes < 1) {
+      // fallback to previous valid game minutes if input is invalid
+      setGameClockMinutesInput(String(gameInputMinutes));
+      setIsClockEditorOpen(false);
+      return;
+    }
+
+    const validated = Math.max(1, Math.min(99, Math.floor(minutes)));
     setGameInputMinutes(validated);
     dispatchGame({ type: 'SET_DURATION_FROM_MINUTES', minutes: validated });
     setIsClockEditorOpen(false);
@@ -172,6 +192,7 @@ export const Scoreboard = (): JSX.Element => {
               minutes={homePenaltyMinutes[slot]}
               setMinutes={setHomePenaltyMinutesAt(slot)}
               disableToggle={true}
+              isPenalty={true}
             />
           ))}
           {Array.from({ length: PENALTY_SLOTS }, (_, slot) => (
@@ -183,6 +204,7 @@ export const Scoreboard = (): JSX.Element => {
               minutes={visitorPenaltyMinutes[slot]}
               setMinutes={setVisitorPenaltyMinutesAt(slot)}
               disableToggle={true}
+              isPenalty={true}
             />
           ))}
         </div>
@@ -190,46 +212,43 @@ export const Scoreboard = (): JSX.Element => {
 
       <div className='scoreboard-wrapper'>
         <div className='scoreboard'>
-          <div
-        className='scoreboard__clock'
-        onClick={!isEditing ? startStopGameClock : undefined}
-        role={!isEditing ? 'button' : undefined}
-        tabIndex={!isEditing ? 0 : undefined}
-      >
-        {isClockEditorOpen ? (
-          <input
-            type='number'
-            id='game-clock-input'
-            className='time-display'
-            min={1}
-            max={99}
-            maxLength={2}
-            value={gameClockMinutesInput}
-            onChange={(e) => {
-              const numeric = e.target.value.replace(/\D/g, '').slice(0, 2);
-              setGameClockMinutesInput(numeric ? Number(numeric) : 0);
-            }}
-            onBlur={() => {
-              commitClockMinutes(gameClockMinutesInput);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                commitClockMinutes(gameClockMinutesInput);
-              }
-              if (e.key === 'Escape') {
-                setIsClockEditorOpen(false);
-              }
-            }}
-            autoFocus
-            aria-label='Set game clock minutes'
-          />
+          <div className='scoreboard__clock'>
+            {isClockEditorOpen ? (
+              <div className='countdown-timer'>
+                <input
+                  ref={clockInputRef}
+                  type='number'
+                  id='game-clock-input'
+                  className='time-display'
+                  min={1}
+                  max={99}
+                  maxLength={2}
+                  value={gameClockMinutesInput}
+                  onChange={(e) => {
+                    const numericString = e.target.value.replace(/\D/g, '').slice(0, 2);
+                    setGameClockMinutesInput(numericString);
+                  }}
+                  onBlur={() => {
+                    commitClockMinutes(gameClockMinutesInput);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      commitClockMinutes(gameClockMinutesInput);
+                    }
+                    if (e.key === 'Escape') {
+                      setIsClockEditorOpen(false);
+                    }
+                  }}
+                  aria-label='Set game clock minutes'
+                />
+              </div>
         ) : (
           <>
             <CountdownTimer
               inputId='game-clock-input'
               seconds={gameTimer.secondsRemaining}
               variant='game'
-              onClick={isEditing ? openClockEditor : undefined}
+              onClick={isEditing ? openClockEditor : startStopGameClock}
             />
           </>
         )}
