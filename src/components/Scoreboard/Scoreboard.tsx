@@ -84,6 +84,8 @@ function usePenaltyInputMinutes(slotCount: number, defaultMinutes: number) {
 export const Scoreboard = (): JSX.Element => {
   const [isEditing, setIsEditing] = useState(false);
   const [gameInputMinutes, setGameInputMinutes] = useState(1);
+  const [isClockEditorOpen, setIsClockEditorOpen] = useState(false);
+  const [gameClockMinutesInput, setGameClockMinutesInput] = useState(1);
   const [homePenaltyMinutes, setHomePenaltyMinutesAt] = usePenaltyInputMinutes(
     PENALTY_SLOTS,
     2,
@@ -94,6 +96,29 @@ export const Scoreboard = (): JSX.Element => {
   const [gameTimer, dispatchGame] = useTimer(DEFAULT_GAME_DURATION_SECONDS);
   const homePenalties = useTimerPair(DEFAULT_PENALTY_DURATION_SECONDS);
   const visitorPenalties = useTimerPair(DEFAULT_PENALTY_DURATION_SECONDS);
+
+  const currentGameMinutes = Math.max(1, Math.ceil(gameTimer.secondsRemaining / 60));
+
+  const openClockEditor = () => {
+    setGameClockMinutesInput(currentGameMinutes);
+    setIsClockEditorOpen(true);
+  };
+
+  const commitClockMinutes = (minutes: number) => {
+    const validated = Math.max(1, Math.min(99, minutes));
+    setGameInputMinutes(validated);
+    dispatchGame({ type: 'SET_DURATION_FROM_MINUTES', minutes: validated });
+    setIsClockEditorOpen(false);
+  };
+
+  const startStopGameClock = () => {
+    if (!gameTimer.isRunning && gameTimer.secondsRemaining > 0) {
+      dispatchGame({ type: 'TOGGLE_RUNNING' });
+    }
+    else {
+      dispatchGame({ type: 'TOGGLE_RUNNING' });
+    }
+  };
 
   // Sync home penalties with game clock
   useEffect(() => {
@@ -165,16 +190,54 @@ export const Scoreboard = (): JSX.Element => {
 
       <div className='scoreboard-wrapper'>
         <div className='scoreboard'>
-          <div className='scoreboard__clock'>
+          <div
+        className='scoreboard__clock'
+        onClick={!isEditing ? startStopGameClock : undefined}
+        role={!isEditing ? 'button' : undefined}
+        tabIndex={!isEditing ? 0 : undefined}
+      >
+        {isClockEditorOpen ? (
+          <input
+            type='number'
+            id='game-clock-input'
+            className='time-display'
+            min={1}
+            max={99}
+            maxLength={2}
+            value={gameClockMinutesInput}
+            onChange={(e) => {
+              const numeric = e.target.value.replace(/\D/g, '').slice(0, 2);
+              setGameClockMinutesInput(numeric ? Number(numeric) : 0);
+            }}
+            onBlur={() => {
+              commitClockMinutes(gameClockMinutesInput);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                commitClockMinutes(gameClockMinutesInput);
+              }
+              if (e.key === 'Escape') {
+                setIsClockEditorOpen(false);
+              }
+            }}
+            autoFocus
+            aria-label='Set game clock minutes'
+          />
+        ) : (
+          <>
             <CountdownTimer
               inputId='game-clock-input'
               seconds={gameTimer.secondsRemaining}
               variant='game'
+              onClick={isEditing ? openClockEditor : undefined}
             />
-            {gameTimer.isFinished && (
-              <div className='timer-message'>Time&apos;s up!</div>
-            )}
-          </div>
+          </>
+        )}
+
+        {gameTimer.isFinished && (
+          <div className='timer-message'>Time&apos;s up!</div>
+        )}
+      </div>
           <div className='scoreboard-team'>
             <h2>Home</h2>
             <p>0</p>
@@ -192,11 +255,12 @@ export const Scoreboard = (): JSX.Element => {
                   className='penalty-timers__slot'
                 >
                   <input
-                    type='text'
-                    pattern='^[0-9]$'
+                    type='number'
                     id={`home-penalty-${slot + 1}-player`}
                     className='time-display'
                     maxLength={2}
+                    min={0}
+                    max={99}
                   />
                   <CountdownTimer
                     inputId={`home-penalty-${slot + 1}-input`}
@@ -218,11 +282,12 @@ export const Scoreboard = (): JSX.Element => {
                   className='penalty-timers__slot'
                 >
                   <input
-                    type='text'
-                    pattern=' 0+\.[0-9]*[1-9][0-9]*$'
+                    type='number'
                     id={`visitor-penalty-${slot + 1}-player`}
                     className='time-display'
                     maxLength={2}
+                    min={0}
+                    max={99}
                   />
                   <CountdownTimer
                     inputId={`visitor-penalty-${slot + 1}-input`}

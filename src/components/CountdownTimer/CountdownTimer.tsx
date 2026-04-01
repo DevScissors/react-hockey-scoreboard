@@ -26,6 +26,8 @@ export type CountdownTimerProps = {
   className?: string;
   /** Unique identifier for the input element. */
   inputId?: string;
+  /** Click handler for making timer editable or toggling edit mode. */
+  onClick?: () => void;
 };
 
 export default function CountdownTimer({
@@ -34,6 +36,7 @@ export default function CountdownTimer({
   variant = 'game',
   className = '',
   inputId,
+  onClick,
 }: CountdownTimerProps) {
   const rootClass = [
     'countdown-timer',
@@ -56,6 +59,8 @@ export default function CountdownTimer({
             : undefined
         }
         value={formatTime(Math.max(0, seconds), variant)}
+        readOnly
+        onClick={onClick}
       />
     </div>
   );

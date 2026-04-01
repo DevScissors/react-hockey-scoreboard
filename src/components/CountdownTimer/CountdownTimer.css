@@ -22,8 +22,14 @@
   font-family: DS-Digital;
   font-size: 75px;
   color: red;
-  width: 16%;
+  width: 100%;
   justify-items: left;
+}
+
+.countdown-timer {
+  cursor: pointer;
+  display: inline-block;
+  width: 19%;
 }
 
 .time-display {
