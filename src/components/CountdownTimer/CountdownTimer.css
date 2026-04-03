@@ -40,6 +40,11 @@
   background: transparent;
 }
 
+.countdown-timer--penalty {
+  width: 25%;
+}
+
 .countdown-timer--penalty .time-display {
   font-size: 28px;
+  width: 25%;
 }

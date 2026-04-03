@@ -27,7 +27,8 @@ export type CountdownTimerProps = {
   /** Unique identifier for the input element. */
   inputId?: string;
   /** Click handler for making timer editable or toggling edit mode. */
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
 };
 
 export default function CountdownTimer({
@@ -37,6 +38,7 @@ export default function CountdownTimer({
   className = '',
   inputId,
   onClick,
+  onBlur,
 }: CountdownTimerProps) {
   const rootClass = [
     'countdown-timer',
@@ -61,6 +63,7 @@ export default function CountdownTimer({
         value={formatTime(Math.max(0, seconds), variant)}
         readOnly
         onClick={onClick}
+        onBlur={onBlur}
       />
     </div>
   );

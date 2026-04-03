@@ -211,112 +211,158 @@ export const Scoreboard = (): JSX.Element => {
       )}
 
       <div className='scoreboard-wrapper'>
-        <div className='scoreboard'>
-          <div className='scoreboard__clock'>
-            {isClockEditorOpen ? (
-              <div className='countdown-timer'>
+        <div className='scoreboard' onClick={() => { if (isEditing) setIsEditing(false); }}>
+          <div className='scoreboard__top-wrapper'>
+            <div className='scoreboard-home-team'>
+              <h2>Home</h2>
+              <input
+                id='home-score-input'
+                type="text"
+                value="0"
+                readOnly={!isEditing}
+                className='score-input'
+              />
+            </div>
+            <div className='scoreboard__clock-period'>
+              <div className='scoreboard__clock'>
+                {isClockEditorOpen ? (
+                  <div className='countdown-timer'>
+                    <input
+                      ref={clockInputRef}
+                      type='number'
+                      id='game-clock-input'
+                      className='time-display'
+                      min={1}
+                      max={99}
+                      maxLength={2}
+                      value={gameClockMinutesInput}
+                      onChange={(e) => {
+                        const numericString = e.target.value.replace(/\D/g, '').slice(0, 2);
+                        setGameClockMinutesInput(numericString);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      onBlur={() => {
+                        commitClockMinutes(gameClockMinutesInput);
+                        setIsEditing(false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          commitClockMinutes(gameClockMinutesInput);
+                        }
+                        if (e.key === 'Escape') {
+                          setIsClockEditorOpen(false);
+                        }
+                      }}
+                      aria-label='Set game clock minutes'
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <CountdownTimer
+                      inputId='game-clock-input'
+                      seconds={gameTimer.secondsRemaining}
+                      variant='game'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isEditing) {
+                          startStopGameClock();
+                        } else {
+                          openClockEditor();
+                        }
+                      }}
+                      onBlur={() => setIsEditing(false)}
+                    />
+                  </>
+                )}
+
+                {gameTimer.isFinished && (
+                  <div className='timer-message'>Time&apos;s up!</div>
+                )}
+              </div>
+              <div className='period-input'>
+                Period:
                 <input
-                  ref={clockInputRef}
-                  type='number'
-                  id='game-clock-input'
-                  className='time-display'
-                  min={1}
-                  max={99}
-                  maxLength={2}
-                  value={gameClockMinutesInput}
-                  onChange={(e) => {
-                    const numericString = e.target.value.replace(/\D/g, '').slice(0, 2);
-                    setGameClockMinutesInput(numericString);
-                  }}
-                  onBlur={() => {
-                    commitClockMinutes(gameClockMinutesInput);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      commitClockMinutes(gameClockMinutesInput);
-                    }
-                    if (e.key === 'Escape') {
-                      setIsClockEditorOpen(false);
-                    }
-                  }}
-                  aria-label='Set game clock minutes'
+                  type="text"
+                  id={'period-counter-input'}
+                  value="1"
+                  className='period-input__field'
+                  readOnly={!isEditing}
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
-        ) : (
-          <>
-            <CountdownTimer
-              inputId='game-clock-input'
-              seconds={gameTimer.secondsRemaining}
-              variant='game'
-              onClick={isEditing ? openClockEditor : startStopGameClock}
-            />
-          </>
-        )}
-
-        {gameTimer.isFinished && (
-          <div className='timer-message'>Time&apos;s up!</div>
-        )}
-      </div>
-          <div className='scoreboard-team'>
-            <h2>Home</h2>
-            <p>0</p>
-            Period: <span>1</span>
-            <h2>Visitor</h2>
-            <p>0</p>
+            </div>
+            <div className='scoreboard-visitor-team'>
+              <h2>Visitor</h2>
+              <input
+                type="text"
+                id='visitor-score-input'
+                value="0"
+                readOnly={!isEditing}
+                className='score-input'
+              />
+            </div>
           </div>
-          <div className='penalty-timers'>
-            <div className='penalty-timers__label'>PENALTY</div>
-            {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
-              const [state] = homePenalties[slot];
-              return (
-                <div
-                  key={`home-display-${slot}`}
-                  className='penalty-timers__slot'
-                >
-                  <input
-                    type='number'
-                    id={`home-penalty-${slot + 1}-player`}
-                    className='time-display'
-                    maxLength={2}
-                    min={0}
-                    max={99}
-                  />
-                  <CountdownTimer
-                    inputId={`home-penalty-${slot + 1}-input`}
-                    variant='penalty'
-                    label=''
-                    seconds={state.secondsRemaining}
-                  />
-                </div>
-              );
-            })}
-          </div>
-          <div className='penalty-timers'>
-            <div className='penalty-timers__label'>PENALTY</div>
-            {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
-              const [state] = visitorPenalties[slot];
-              return (
-                <div
-                  key={`visitor-display-${slot}`}
-                  className='penalty-timers__slot'
-                >
-                  <input
-                    type='number'
-                    id={`visitor-penalty-${slot + 1}-player`}
-                    className='time-display'
-                    maxLength={2}
-                    min={0}
-                    max={99}
-                  />
-                  <CountdownTimer
-                    inputId={`visitor-penalty-${slot + 1}-input`}
-                    variant='penalty'
-                    label=''
-                    seconds={state.secondsRemaining}
-                  />
-                </div>
-              );
-            })}
+          <div className="scoreboard__bottom-wrapper">
+            <div className='penalty-timers'>
+              <div className='penalty-timers__label'>PENALTY</div>
+              {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
+                const [state] = homePenalties[slot];
+                return (
+                  <div
+                    key={`home-display-${slot}`}
+                    className='penalty-timers__slot'
+                  >
+                    <input
+                      type='number'
+                      id={`home-penalty-${slot + 1}-player`}
+                      className='time-display'
+                      maxLength={2}
+                      min={0}
+                      max={99}
+                      readOnly={!isEditing}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <CountdownTimer
+                      inputId={`home-penalty-${slot + 1}-input`}
+                      variant='penalty'
+                      label=''
+                      seconds={state.secondsRemaining}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <div className='penalty-timers'>
+              <div className='penalty-timers__label'>PENALTY</div>
+              {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
+                const [state] = visitorPenalties[slot];
+                return (
+                  <div
+                    key={`visitor-display-${slot}`}
+                    className='penalty-timers__slot'
+                  >
+                    <input
+                      type='number'
+                      id={`visitor-penalty-${slot + 1}-player`}
+                      className='time-display'
+                      maxLength={2}
+                      min={0}
+                      max={99}
+                      readOnly={!isEditing}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <CountdownTimer
+                      inputId={`visitor-penalty-${slot + 1}-input`}
+                      variant='penalty'
+                      label=''
+                      seconds={state.secondsRemaining}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

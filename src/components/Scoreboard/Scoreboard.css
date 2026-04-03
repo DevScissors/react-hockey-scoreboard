@@ -2,6 +2,7 @@
   font-family: DS-Digital;
   src: url(../shared/ds_digital/DS-DIGI.TTF);
 }
+
 .digital-text {
   font-family: DS-Digital;
   font-size: 40px;
@@ -43,10 +44,51 @@
   min-width: 220px;
 }
 
+.scoreboard__clock-period {
+  width: min-content;
+}
+
+.scoreboard__top-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scoreboard__bottom-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
 .scoreboard__clock .time-display {
   width: 100%;
   text-align: center;
   font-size: 75px;
+}
+
+.period-input {
+  display: flex;
+  align-self: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.period-input__field {
+  font-family: DS-Digital;
+  color: red;
+  width: 3ch;
+  font-size: 28px;
+  text-align: center;
+}
+
+.score-input {
+  font-family: DS-Digital;
+  color: red;
+  width: 3ch;
+  font-size: 36px;
+  text-align: center;
 }
 
 .timer-message {
@@ -84,9 +126,11 @@
 #visitor-penalty-2-player {
   margin-right: 10px;
   margin-left: 25%;
-  width: 3%;
+  width: auto;
   font-size: 28px;
   text-align: center;
+  font-family: DS-Digital;
+  color: red;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -100,4 +144,3 @@ input:not(.show-spinner)::-webkit-inner-spin-button {
 input[type='number']:not(.show-spinner) {
   -moz-appearance: textfield;
 }
-
