@@ -304,7 +304,10 @@ export const Scoreboard = (): JSX.Element => {
           </div>
           <div className="scoreboard__bottom-wrapper">
             <div className='penalty-timers'>
-              <div className='penalty-timers__label'>PENALTY</div>
+              <div className='penalty-home-label-wrapper'>
+                <div className='penalty-player-number__label'>PLAYER</div>
+                <div className='penalty-timers__label'>PENALTY</div>
+              </div>
               {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
                 const [state] = homePenalties[slot];
                 return (
@@ -334,7 +337,10 @@ export const Scoreboard = (): JSX.Element => {
               })}
             </div>
             <div className='penalty-timers'>
-              <div className='penalty-timers__label'>PENALTY</div>
+              <div className='penalty-visitor-label-wrapper'>
+                <div className='penalty-player-number__label'>PLAYER</div>
+                <div className='penalty-timers__label'>PENALTY</div>
+              </div>
               {Array.from({ length: PENALTY_SLOTS }, (_, slot) => {
                 const [state] = visitorPenalties[slot];
                 return (

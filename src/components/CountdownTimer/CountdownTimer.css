@@ -20,7 +20,7 @@
 
 #game-clock-input {
   font-family: DS-Digital;
-  font-size: 75px;
+  font-size: 74px;
   color: red;
 }
 
@@ -45,6 +45,6 @@
 }
 
 .countdown-timer--penalty .time-display {
-  font-size: 28px;
-  width: 25%;
+  font-size: 74px;
+  margin-left: -20%;
 }

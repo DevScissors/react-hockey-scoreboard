@@ -87,7 +87,7 @@
   font-family: DS-Digital;
   color: red;
   width: 3ch;
-  font-size: 36px;
+  font-size: 100px;
   text-align: center;
 }
 
@@ -120,14 +120,21 @@
   justify-self: center;
 }
 
+.penalty-home-label-wrapper,
+.penalty-visitor-label-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  width: 40%;
+  margin-left: 20%;
+}
+
 #home-penalty-1-player,
 #home-penalty-2-player,
 #visitor-penalty-1-player,
 #visitor-penalty-2-player {
   margin-right: 10px;
-  margin-left: 25%;
-  width: auto;
-  font-size: 28px;
+  width: 18%;
+  font-size: 74px;
   text-align: center;
   font-family: DS-Digital;
   color: red;
